@@ -1,4 +1,4 @@
-import { type ChangeEvent, useCallback, useState } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 const WORKBENCH_PATH = process.env.AGENTUITY_PUBLIC_WORKBENCH_PATH;
 
@@ -69,6 +69,31 @@ export function App() {
 		} catch (error) {
 			console.error('Clear failed:', error);
 		}
+	}, []);
+
+	// Fetch existing history on page load
+	useEffect(() => {
+		const fetchHistory = async () => {
+			try {
+				const response = await fetch('/api/translate', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({}),
+				});
+
+				if (response.ok) {
+					const data = await response.json();
+					// Only set if there's history (don't overwrite with empty result)
+					if (data.history?.length > 0) {
+						setResult(data);
+					}
+				}
+			} catch (error) {
+				// Silently fail - history is optional
+			}
+		};
+
+		fetchHistory();
 	}, []);
 
 	return (
