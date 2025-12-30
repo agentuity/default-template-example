@@ -1,10 +1,9 @@
-import { useAPI } from '@agentuity/react';
 import { type ChangeEvent, useCallback, useState } from 'react';
 
 const WORKBENCH_PATH = process.env.AGENTUITY_PUBLIC_WORKBENCH_PATH;
 
 const DEFAULT_TEXT =
-	'Welcome to Agentuity! This translation agent demonstrates how to build AI-powered applications with typed schemas, automatic evaluations, and session history. Try translating this text into different languages to see the agent in action.';
+	'Welcome to Agentuity! This translation agent shows what you can build with the platform. It connects to AI models through our gateway, saves your history using thread state, and runs quality checks automatically. Try translating this text into different languages to see the agent in action.';
 
 const LANGUAGES = ['Spanish', 'French', 'German', 'Japanese', 'Chinese'] as const;
 
@@ -19,6 +18,7 @@ interface HistoryEntry {
 interface TranslationResponse {
 	translation: string;
 	wordCount: number;
+	tokens: number;
 	history: HistoryEntry[];
 	threadId: string;
 	translationCount: number;
@@ -27,20 +27,49 @@ interface TranslationResponse {
 export function App() {
 	const [text, setText] = useState(DEFAULT_TEXT);
 	const [toLanguage, setToLanguage] = useState<(typeof LANGUAGES)[number]>('Spanish');
+	const [translating, setTranslating] = useState(false);
+	const [result, setResult] = useState<TranslationResponse | null>(null);
 
-	const {
-		data: result,
-		invoke: translate,
-		isLoading: translating,
-	} = useAPI('POST /api/translate') as {
-		data: TranslationResponse | undefined;
-		invoke: (data: { text: string; toLanguage: string }) => void;
-		isLoading: boolean;
-	};
+	const handleTranslate = useCallback(async () => {
+		setTranslating(true);
+		try {
+			const response = await fetch('/api/translate', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ text, toLanguage }),
+			});
 
-	const handleTranslate = useCallback(() => {
-		translate({ text, toLanguage });
-	}, [text, toLanguage, translate]);
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}`);
+			}
+
+			const data = await response.json();
+			setResult(data);
+		} catch (error) {
+			console.error('Translation failed:', error);
+		} finally {
+			setTranslating(false);
+		}
+	}, [text, toLanguage]);
+
+	const handleClearHistory = useCallback(async () => {
+		try {
+			const response = await fetch('/api/translate', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ command: 'clear' }),
+			});
+
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}`);
+			}
+
+			const data = await response.json();
+			setResult(data);
+		} catch (error) {
+			console.error('Clear failed:', error);
+		}
+	}, []);
 
 	return (
 		<div className="app-container">
@@ -78,33 +107,24 @@ export function App() {
 				</div>
 
 				<div className="card card-interactive">
-					<h2 className="card-title">
-						Translate to{' '}
-						<select
-							className="inline-select"
-							disabled={translating}
-							onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-								setToLanguage(e.currentTarget.value as (typeof LANGUAGES)[number])
-							}
-							value={toLanguage}
-						>
-							{LANGUAGES.map((lang) => (
-								<option key={lang} value={lang}>
-									{lang}
-								</option>
-							))}
-						</select>
-					</h2>
-
-					<div className="form-group">
-						<textarea
-							className="textarea"
-							disabled={translating}
-							onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setText(e.currentTarget.value)}
-							placeholder="Enter text to translate..."
-							rows={4}
-							value={text}
-						/>
+					<div className="controls-row">
+						<span className="control-label">
+							Translate to{' '}
+							<select
+								className="inline-select"
+								disabled={translating}
+								onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+									setToLanguage(e.currentTarget.value as (typeof LANGUAGES)[number])
+								}
+								value={toLanguage}
+							>
+								{LANGUAGES.map((lang) => (
+									<option key={lang} value={lang}>
+										{lang}
+									</option>
+								))}
+							</select>
+						</span>
 
 						<div className="glow-btn">
 							<div className="glow-bg" />
@@ -120,46 +140,84 @@ export function App() {
 						</div>
 					</div>
 
-					{result ? (
+					<textarea
+						className="textarea"
+						disabled={translating}
+						onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setText(e.currentTarget.value)}
+						placeholder="Enter text to translate..."
+						rows={4}
+						value={text}
+					/>
+
+					{result?.translation ? (
 						<div className="result">
-							<div className="translation-output">{result.translation}</div>
+							<div className={`translation-output ${translating ? 'loading' : ''}`}>
+								{result.translation}
+							</div>
 							<div className="result-meta">
 								<span>
-									Words: <strong>{result.wordCount}</strong>
+									Words: <strong>{result.wordCount ?? 0}</strong>
 								</span>
-								<span className="separator">|</span>
-								<span>
-									Thread: <strong>{result.threadId.slice(0, 12)}...</strong>
-								</span>
-								<span className="separator">|</span>
-								<span>
-									Translations: <strong>{result.translationCount}</strong>
-								</span>
+								{result.tokens > 0 && (
+									<>
+										<span className="separator">|</span>
+										<span>
+											Tokens: <strong>{result.tokens}</strong>
+										</span>
+									</>
+								)}
+								{result.threadId && (
+									<>
+										<span className="separator">|</span>
+										<span>
+											Thread: <strong>{result.threadId.slice(0, 12)}...</strong>
+										</span>
+									</>
+								)}
 							</div>
 						</div>
 					) : (
-						<div className="output" data-loading={translating}>
-							{translating ? 'Translating' : 'Enter text and click Translate'}
+						<div className="output">
+							{translating ? (
+								<span className="loading-text">Translating to {toLanguage}...</span>
+							) : (
+								'Translation will appear here'
+							)}
 						</div>
 					)}
 				</div>
 
-				{result?.history && result.history.length > 0 && (
-					<div className="card">
+				<div className="card">
+					<div className="section-header">
 						<h3 className="section-title">Recent Translations</h3>
+						{result?.history && result.history.length > 0 && (
+							<button
+								className="clear-btn"
+								onClick={handleClearHistory}
+								type="button"
+							>
+								Clear
+							</button>
+						)}
+					</div>
+					{result?.history && result.history.length > 0 ? (
 						<div className="history-list">
 							{result.history.map((entry, index) => (
 								<div key={`${entry.timestamp}-${index}`} className="history-item">
-									<div className="history-text">"{entry.text}"</div>
-									<div className="history-arrow">
-										<span className="history-lang">{entry.toLanguage}</span>
-									</div>
-									<div className="history-translation">"{entry.translation}"</div>
+									<span className="history-text">{entry.text}</span>
+									<span className="history-arrow">→</span>
+									<span className="history-lang">{entry.toLanguage}</span>
+									<span className="history-translation">{entry.translation}</span>
 								</div>
 							))}
 						</div>
-					</div>
-				)}
+					) : (
+						<p className="empty-state">
+							Translation history is stored using thread state, which persists across requests
+							for the same user session.
+						</p>
+					)}
+				</div>
 
 				<div className="card">
 					<h3 className="section-title">Features Demonstrated</h3>
@@ -397,10 +455,15 @@ export function App() {
 						color: #fff;
 					}
 
-					.form-group {
+					.controls-row {
+						align-items: center;
 						display: flex;
-						flex-direction: column;
-						gap: 1rem;
+						gap: 2.5rem;
+					}
+
+					.control-label {
+						color: #a1a1aa;
+						font-size: 1rem;
 					}
 
 					.textarea {
@@ -504,14 +567,26 @@ export function App() {
 						background: #09090b;
 						border: 1px solid #2b2b30;
 						border-radius: 0.375rem;
-						color: #a1a1aa;
-						font-family: monospace;
-						line-height: 1.5;
+						color: #52525b;
+						font-size: 0.95rem;
+						line-height: 1.6;
+						min-height: 3rem;
 						padding: 0.75rem 1rem;
 					}
 
-					.output[data-loading="true"] {
+					.loading-text {
 						color: #22d3ee;
+					}
+
+					.translation-output.loading {
+						opacity: 0.5;
+					}
+
+					.section-header {
+						align-items: center;
+						display: flex;
+						justify-content: space-between;
+						margin-bottom: 1.5rem;
 					}
 
 					.section-title {
@@ -522,24 +597,42 @@ export function App() {
 						margin: 0 0 1.5rem 0;
 					}
 
+					.section-header .section-title {
+						margin: 0;
+					}
+
+					.clear-btn {
+						background: transparent;
+						border: 1px solid #3f3f46;
+						border-radius: 0.25rem;
+						color: #71717a;
+						cursor: pointer;
+						font-size: 0.75rem;
+						padding: 0.25rem 0.5rem;
+						transition: all 0.2s;
+					}
+
+					.clear-btn:hover {
+						border-color: #ef4444;
+						color: #ef4444;
+					}
+
 					.history-list {
 						display: flex;
 						flex-direction: column;
-						gap: 1rem;
+						gap: 0.75rem;
 					}
 
 					.history-item {
-						display: flex;
+						display: grid;
+						grid-template-columns: 1fr auto auto 1fr;
 						align-items: center;
 						gap: 0.75rem;
 						font-size: 0.85rem;
-						flex-wrap: wrap;
 					}
 
 					.history-text {
-						color: #a1a1aa;
-						flex: 1;
-						min-width: 150px;
+						color: #71717a;
 						overflow: hidden;
 						text-overflow: ellipsis;
 						white-space: nowrap;
@@ -547,13 +640,6 @@ export function App() {
 
 					.history-arrow {
 						color: #3f3f46;
-						display: flex;
-						align-items: center;
-						gap: 0.5rem;
-					}
-
-					.history-arrow::before {
-						content: '→';
 					}
 
 					.history-lang {
@@ -562,15 +648,22 @@ export function App() {
 						color: #a1a1aa;
 						font-size: 0.75rem;
 						padding: 0.25rem 0.5rem;
+						text-align: center;
+						min-width: 4.5rem;
 					}
 
 					.history-translation {
-						color: #22d3ee;
-						flex: 1;
-						min-width: 150px;
+						color: #d4d4d8;
 						overflow: hidden;
 						text-overflow: ellipsis;
 						white-space: nowrap;
+					}
+
+					.empty-state {
+						color: #52525b;
+						font-size: 0.875rem;
+						font-style: italic;
+						margin: 0;
 					}
 
 					.steps-list {
