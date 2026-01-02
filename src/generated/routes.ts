@@ -54,11 +54,6 @@ declare module '@agentuity/react' {
 		outputSchema: POSTApiTranslateOutputSchema;
 		stream: typeof translate extends { stream?: infer S } ? S : false;
 	};
-	'GET /api/translate/history': {
-		inputSchema: never;
-		outputSchema: never;
-		stream: false;
-	};
 	}
 	
 	/**
@@ -91,12 +86,6 @@ declare module '@agentuity/react' {
 			 * Route: POST /api/translate
 			 */
 			post: { input: POSTApiTranslateInput; output: POSTApiTranslateOutput; type: 'api' };
-			history: {
-				/**
-				 * Route: GET /api/translate/history
-				 */
-				get: { input: never; output: never; type: 'api' };
-			};
 		};
 	}
 }
@@ -110,11 +99,6 @@ const _rpcRouteMetadata = {
 		"translate": {
 				"post": {
 						"type": "api"
-				},
-				"history": {
-						"get": {
-								"type": "api"
-						}
 				}
 		}
 } as const;

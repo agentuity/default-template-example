@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-deploy
 description: Deploy project to the Agentuity Cloud. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.109"
+version: "0.0.110"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 metadata:
@@ -39,9 +39,8 @@ agentuity cloud deploy [options]
 | `--repo` | string | Yes | - | The repo url |
 | `--event` | string | No | `"manual"` | The event that triggered the deployment |
 | `--pullRequestNumber` | number | Yes | - | the pull request number |
-| `--pullRequestCommentId` | string | Yes | - | the pull request comment id |
-| `--pullRequestURL` | string | Yes | - | the pull request url |
-| `--saveTypeErrors` | string | Yes | - | file path to save typecheck errors |
+| `--pullRequestUrl` | string | Yes | - | the pull request url |
+| `--reportFile` | string | Yes | - | file path to save build report JSON with errors, warnings, and diagnostics |
 
 ## Examples
 

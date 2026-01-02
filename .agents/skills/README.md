@@ -11,9 +11,9 @@ Learn more at the [Agent Skills Specification](https://agentskills.io/specificat
 
 ## Generated From
 
-- **CLI Version**: 0.0.109
+- **CLI Version**: 0.0.110
 - **Generated**: 2026-01-02
-- **Total Skills**: 102
+- **Total Skills**: 104
 
 ## Available Skills
 
@@ -143,6 +143,8 @@ Learn more at the [Agent Skills Specification](https://agentskills.io/specificat
 
 | Skill | Command | Description |
 |-------|---------|-------------|
+| [agentuity-cli-project-auth-generate](./agentuity-cli-project-auth-generate) | `agentuity project auth generate` | Generate SQL schema for Agentuity Auth tables |
+| [agentuity-cli-project-auth-init](./agentuity-cli-project-auth-init) | `agentuity project auth init` | Set up Agentuity Auth for your project |
 | [agentuity-cli-project-create](./agentuity-cli-project-create) | `agentuity project create` | Create a new project |
 | [agentuity-cli-project-delete](./agentuity-cli-project-delete) | `agentuity project delete` | Delete a project |
 | [agentuity-cli-project-list](./agentuity-cli-project-list) | `agentuity project list` | List all projects |

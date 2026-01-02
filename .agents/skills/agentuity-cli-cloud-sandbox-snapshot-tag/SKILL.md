@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-sandbox-snapshot-tag
 description: Add or update a tag on a snapshot. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.109"
+version: "0.0.110"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "<snapshotId> [tag]"

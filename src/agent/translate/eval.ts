@@ -15,7 +15,7 @@ export const politenessEval = agent.createEval(
 	politeness<typeof AgentInput, typeof AgentOutput>({
 		threshold: 0.7,
 		middleware: {
-			transformInput: (input) => ({ request: `Translate "${input.text}" to ${input.toLanguage}` }),
+			transformInput: (input) => ({ request: `Translate "${input.text ?? ''}" to ${input.toLanguage ?? 'Spanish'}` }),
 			transformOutput: (output) => ({ response: output.translation }),
 		},
 	})
@@ -26,13 +26,18 @@ export const correctLanguageEval = agent.createEval({
 	name: 'correct-language',
 	description: 'Verifies the translation is in the target language',
 	handler: async (_ctx, input, output) => {
+		// Skip eval if no translation (e.g., clear command)
+		if (!output.translation) {
+			return { passed: true, metadata: { reason: 'No translation to evaluate' } };
+		}
+
 		const completion = await client.chat.completions.create({
 			model: 'gpt-5-nano',
 			response_format: { type: 'json_object' },
 			messages: [
 				{
 					role: 'system',
-					content: `Is this text written in ${input.toLanguage}? Respond with JSON: { "correct": true/false, "reason": "brief explanation" }`,
+					content: `Is this text written in ${input.toLanguage ?? 'Spanish'}? Respond with JSON: { "correct": true/false, "reason": "brief explanation" }`,
 				},
 				{ role: 'user', content: output.translation },
 			],

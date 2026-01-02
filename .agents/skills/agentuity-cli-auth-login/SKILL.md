@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-auth-login
 description: "Login to the Agentuity Platform using a browser-based authentication flow. Use for managing authentication credentials"
-version: "0.0.109"
+version: "0.0.110"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 metadata:

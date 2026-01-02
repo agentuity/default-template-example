@@ -1,4 +1,4 @@
-import { type ChangeEvent, useCallback, useState } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useAPI } from '@agentuity/react';
 
 const WORKBENCH_PATH = process.env.AGENTUITY_PUBLIC_WORKBENCH_PATH;
@@ -7,17 +7,31 @@ const DEFAULT_TEXT =
 	'Welcome to Agentuity! This translation agent shows what you can build with the platform. It connects to AI models through our gateway, tracks usage with thread state, and runs quality checks automatically. Try translating this text into different languages to see the agent in action.';
 
 const LANGUAGES = ['Spanish', 'French', 'German', 'Chinese'] as const;
+const MODELS = ['gpt-5-nano', 'gpt-5-mini', 'gpt-5'] as const;
 
 export function App() {
 	const [text, setText] = useState(DEFAULT_TEXT);
 	const [toLanguage, setToLanguage] = useState<(typeof LANGUAGES)[number]>('Spanish');
+	const [model, setModel] = useState<(typeof MODELS)[number]>('gpt-5-nano');
+	const [isTranslating, setIsTranslating] = useState(false);
 
 	// useAPI hook handles loading state and response typing automatically
-	const { data: result, invoke, isLoading: translating } = useAPI('POST /api/translate');
+	const { data: result, invoke, isLoading } = useAPI('POST /api/translate');
 
 	const handleTranslate = useCallback(async () => {
-		await invoke({ text, toLanguage });
-	}, [text, toLanguage, invoke]);
+		setIsTranslating(true);
+		await invoke({ text, toLanguage, model });
+		setIsTranslating(false);
+	}, [text, toLanguage, model, invoke]);
+
+	const handleClearHistory = useCallback(async () => {
+		await invoke({ command: 'clear' });
+	}, [invoke]);
+
+	// Load existing translation history on mount
+	useEffect(() => {
+		invoke({});
+	}, [invoke]);
 
 	return (
 		<div className="app-container">
@@ -60,7 +74,7 @@ export function App() {
 							Translate to{' '}
 							<select
 								className="inline-select"
-								disabled={translating}
+								disabled={isTranslating}
 								onChange={(e: ChangeEvent<HTMLSelectElement>) =>
 									setToLanguage(e.currentTarget.value as (typeof LANGUAGES)[number])
 								}
@@ -74,30 +88,46 @@ export function App() {
 							</select>
 						</span>
 
+						<span className="control-label">
+							using{' '}
+							<select
+								className="inline-select"
+								disabled={isTranslating}
+								onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+									setModel(e.currentTarget.value as (typeof MODELS)[number])
+								}
+								value={model}
+							>
+								<option value="gpt-5-nano">GPT-5 Nano</option>
+								<option value="gpt-5-mini">GPT-5 Mini</option>
+								<option value="gpt-5">GPT-5</option>
+							</select>
+						</span>
+
 						<div className="glow-btn">
 							<div className="glow-bg" />
 							<div className="glow-effect" />
 							<button
-								className={`button ${translating ? 'disabled' : ''}`}
-								disabled={translating}
+								className={`button ${isTranslating ? 'disabled' : ''}`}
+								disabled={isTranslating}
 								onClick={handleTranslate}
 								type="button"
 							>
-								{translating ? 'Translating...' : 'Translate'}
+								{isTranslating ? 'Translating...' : 'Translate'}
 							</button>
 						</div>
 					</div>
 
 					<textarea
 						className="textarea"
-						disabled={translating}
+						disabled={isTranslating}
 						onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setText(e.currentTarget.value)}
 						placeholder="Enter text to translate..."
 						rows={4}
 						value={text}
 					/>
 
-					{translating ? (
+					{isTranslating ? (
 						<div className="output">
 							<span className="loading-text">
 								Translating to {toLanguage}
@@ -112,16 +142,24 @@ export function App() {
 						<div className="result">
 							<div className="translation-output">{result.translation}</div>
 							<div className="result-meta">
+								{result.tokens > 0 && (
+									<>
+										<span>
+											Tokens: <strong>{result.tokens}</strong>
+										</span>
+										<span className="separator">|</span>
+									</>
+								)}
 								{result.threadId && (
-									<span>
+									<span className="id-badge" data-tooltip={`Your conversation context that persists across requests. All translations share this thread, letting the agent remember history. Each request gets a unique session ID, but the thread stays the same.\n\nID: ${result.threadId}`}>
 										Thread: <strong>{result.threadId.slice(0, 12)}...</strong>
 									</span>
 								)}
-								{result.translationCount > 0 && (
+								{result.sessionId && (
 									<>
 										<span className="separator">|</span>
-										<span>
-											Translations: <strong>{result.translationCount}</strong>
+										<span className="id-badge" data-tooltip={`A unique identifier for this specific request. Useful for debugging and tracing individual operations in your agent logs.\n\nID: ${result.sessionId}`}>
+											Session: <strong>{result.sessionId.slice(0, 12)}...</strong>
 										</span>
 									</>
 								)}
@@ -133,7 +171,41 @@ export function App() {
 				</div>
 
 				<div className="card">
-					<h3 className="section-title">Features Demonstrated</h3>
+					<div className="section-header">
+						<h3 className="section-title">Recent Translations</h3>
+						{result?.history && result.history.length > 0 && (
+							<button className="clear-btn" onClick={handleClearHistory} type="button">
+								Clear
+							</button>
+						)}
+					</div>
+					<div className="history-container">
+						{result?.history && result.history.length > 0 ? (
+							<div className="history-list">
+								{result.history.map((entry, index) => (
+									<div
+										key={`${entry.timestamp}-${index}`}
+										className="history-item"
+										data-tooltip={`Model: ${entry.model}\nTokens: ${entry.tokens}\nLatency: ${entry.latencyMs}ms`}
+									>
+										<span className="history-text">{entry.text}</span>
+										<span className="history-arrow">→</span>
+										<span className="history-lang">{entry.toLanguage}</span>
+										<span className="history-translation">{entry.translation}</span>
+										<span className="history-session">
+											{entry.sessionId.slice(0, 8)}...
+										</span>
+									</div>
+								))}
+							</div>
+						) : (
+							<div className="history-empty-text">History will appear here</div>
+						)}
+					</div>
+				</div>
+
+				<div className="card">
+					<h3 className="section-title section-title-standalone">Features Demonstrated</h3>
 
 					<div className="steps-list">
 						{[
@@ -163,14 +235,19 @@ export function App() {
 								text: (
 									<>
 										Two evals run in background: <code>correct-language</code> (binary) and{' '}
-										<code>translation-quality</code> (score).
+										<code>politeness</code> (score).
 									</>
 								),
 							},
 							{
 								key: 'threads',
-								title: 'Thread State',
-								text: <>Translation count persists across requests using thread state.</>,
+								title: 'Thread & Session State',
+								text: (
+									<>
+										Translation history persists in thread state. Thread ID stays the same across
+										requests; session ID changes each time.
+									</>
+								),
 							},
 							WORKBENCH_PATH
 								? {
@@ -376,7 +453,8 @@ export function App() {
 					.controls-row {
 						align-items: center;
 						display: flex;
-						gap: 2.5rem;
+						flex-wrap: wrap;
+						gap: 1.5rem;
 					}
 
 					.control-label {
@@ -477,6 +555,50 @@ export function App() {
 						color: #a1a1aa;
 					}
 
+					.id-badge {
+						border-bottom: 1px dashed #3f3f46;
+						cursor: help;
+						padding-bottom: 1px;
+						position: relative;
+						transition: border-color 0.2s;
+					}
+
+					.id-badge:hover {
+						border-bottom-color: #22d3ee;
+					}
+
+					.id-badge:hover::after {
+						content: attr(data-tooltip);
+						position: absolute;
+						bottom: 100%;
+						left: 50%;
+						transform: translateX(-50%);
+						background: #18181b;
+						border: 1px solid #27272a;
+						border-radius: 0.5rem;
+						padding: 0.875rem 1rem;
+						font-size: 0.8rem;
+						line-height: 1.5;
+						color: #d4d4d8;
+						white-space: pre-wrap;
+						max-width: 280px;
+						z-index: 10;
+						margin-bottom: 0.5rem;
+						box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+					}
+
+					.id-badge:hover::before {
+						content: '';
+						position: absolute;
+						bottom: 100%;
+						left: 50%;
+						transform: translateX(-50%);
+						border: 6px solid transparent;
+						border-top-color: #27272a;
+						margin-bottom: -6px;
+						z-index: 11;
+					}
+
 					.separator {
 						color: #3f3f46;
 					}
@@ -510,12 +632,130 @@ export function App() {
 						40%, 100% { opacity: 1; }
 					}
 
+					.section-header {
+						align-items: center;
+						display: flex;
+						justify-content: space-between;
+						margin-bottom: 1.5rem;
+					}
+
 					.section-title {
 						color: #fff;
 						font-size: 1.25rem;
 						font-weight: 400;
 						line-height: 1;
-						margin: 0 0 1.5rem 0;
+						margin: 0;
+					}
+
+					.section-title-standalone {
+						margin-bottom: 1.5rem;
+					}
+
+					.clear-btn {
+						background: transparent;
+						border: 1px solid #27272a;
+						border-radius: 0.25rem;
+						color: #a1a1aa;
+						cursor: pointer;
+						font-size: 0.75rem;
+						padding: 0.375rem 0.75rem;
+						transition: all 0.2s;
+					}
+
+					.clear-btn:hover {
+						background: #18181b;
+						border-color: #3f3f46;
+						color: #fff;
+					}
+
+					.history-container {
+						background: #09090b;
+						border: 1px solid #2b2b30;
+						border-radius: 0.375rem;
+						padding: 0.75rem 1rem;
+					}
+
+					.history-list {
+						display: flex;
+						flex-direction: column;
+						gap: 0.75rem;
+					}
+
+					.history-item {
+						align-items: center;
+						display: grid;
+						font-size: 0.8rem;
+						gap: 0.75rem;
+						grid-template-columns: 1fr auto auto 1fr auto;
+						padding: 0.5rem;
+						margin: -0.5rem;
+						border-radius: 0.25rem;
+						cursor: help;
+						position: relative;
+						transition: background 0.15s;
+					}
+
+					.history-item:hover {
+						background: #18181b;
+					}
+
+					.history-item:hover::after {
+						content: attr(data-tooltip);
+						position: absolute;
+						bottom: 100%;
+						left: 50%;
+						transform: translateX(-50%);
+						background: #18181b;
+						border: 1px solid #27272a;
+						border-radius: 0.375rem;
+						padding: 0.5rem 0.75rem;
+						font-size: 0.75rem;
+						line-height: 1.5;
+						color: #d4d4d8;
+						white-space: pre;
+						z-index: 10;
+						margin-bottom: 0.25rem;
+						box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+					}
+
+					.history-text {
+						color: #71717a;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
+
+					.history-arrow {
+						color: #3f3f46;
+					}
+
+					.history-lang {
+						background: #18181b;
+						border: 1px solid #27272a;
+						border-radius: 0.25rem;
+						color: #a1a1aa;
+						font-size: 0.7rem;
+						padding: 0.25rem 0.625rem;
+						text-align: center;
+						min-width: 4.5rem;
+					}
+
+					.history-translation {
+						color: #a1a1aa;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
+					}
+
+					.history-session {
+						color: #52525b;
+						font-family: ui-monospace, monospace;
+						font-size: 0.65rem;
+					}
+
+					.history-empty-text {
+						color: #52525b;
+						font-size: 0.875rem;
 					}
 
 					.steps-list {
