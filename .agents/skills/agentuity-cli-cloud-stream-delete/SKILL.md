@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-stream-delete
 description: Delete a stream by ID (soft delete). Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.106"
+version: "0.0.109"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "<id>"

@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-deploy
 description: Deploy project to the Agentuity Cloud. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.106"
+version: "0.0.109"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 metadata:
@@ -29,16 +29,19 @@ agentuity cloud deploy [options]
 
 | Option | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
-| `--tag` | array | No | `["latest"]` | One or more tags to add to the deployment |
 | `--logsUrl` | string | Yes | - | The url to the CI build logs |
 | `--trigger` | string | No | `"cli"` | The trigger that caused the build |
 | `--commitUrl` | string | Yes | - | The url to the CI commit |
 | `--message` | string | Yes | - | The message to associate with this deployment |
+| `--commit` | string | Yes | - | The commit SHA for this deployment |
+| `--branch` | string | Yes | - | The git branch for this deployment |
 | `--provider` | string | Yes | - | The CI provider name (attempts to autodetect) |
+| `--repo` | string | Yes | - | The repo url |
 | `--event` | string | No | `"manual"` | The event that triggered the deployment |
 | `--pullRequestNumber` | number | Yes | - | the pull request number |
 | `--pullRequestCommentId` | string | Yes | - | the pull request comment id |
 | `--pullRequestURL` | string | Yes | - | the pull request url |
+| `--saveTypeErrors` | string | Yes | - | file path to save typecheck errors |
 
 ## Examples
 
@@ -52,12 +55,6 @@ Deploy with verbose output:
 
 ```bash
 bunx @agentuity/cli cloud deploy --log-level=debug
-```
-
-Deploy with specific tags:
-
-```bash
-bunx @agentuity/cli cloud deploy --tag a --tag b
 ```
 
 ## Output

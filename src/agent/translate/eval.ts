@@ -2,25 +2,37 @@
  * Evals run automatically after each agent execution to assess output quality.
  * Results are logged and available in the console (they don't block responses).
  */
-
 import OpenAI from 'openai';
-import agent from './agent';
+import { politeness } from '@agentuity/evals';
+import agent, { AgentInput, AgentOutput } from './agent';
 
 const client = new OpenAI();
 
 export default agent;
 
-// Binary eval: checks if translation is in the correct language
-export const correctLanguageEval = agent.createEval('correct-language', {
-	description: 'Verifies the translation is in the correct target language',
-	handler: async (ctx, input, output) => {
+// Preset eval (score): Uses the built-in politeness eval with middleware to adapt schemas
+export const politenessEval = agent.createEval(
+	politeness<typeof AgentInput, typeof AgentOutput>({
+		threshold: 0.7,
+		middleware: {
+			transformInput: (input) => ({ request: `Translate "${input.text}" to ${input.toLanguage}` }),
+			transformOutput: (output) => ({ response: output.translation }),
+		},
+	})
+);
+
+// Custom eval (binary): LLM-as-judge to verify translation is in the correct language
+export const correctLanguageEval = agent.createEval({
+	name: 'correct-language',
+	description: 'Verifies the translation is in the target language',
+	handler: async (_ctx, input, output) => {
 		const completion = await client.chat.completions.create({
 			model: 'gpt-5-nano',
 			response_format: { type: 'json_object' },
 			messages: [
 				{
 					role: 'system',
-					content: `Is this text written in ${input.toLanguage}? Respond: { "correct": true/false, "reason": "brief explanation" }`,
+					content: `Is this text written in ${input.toLanguage}? Respond with JSON: { "correct": true/false, "reason": "brief explanation" }`,
 				},
 				{ role: 'user', content: output.translation },
 			],
@@ -31,31 +43,6 @@ export const correctLanguageEval = agent.createEval('correct-language', {
 			reason: string;
 		};
 
-		return { passed: result.correct, metadata: { reason: result.reason } };
-	},
-});
-
-// Score eval: rates translation quality from 0-1
-export const translationQualityEval = agent.createEval('translation-quality', {
-	description: 'Scores translation fluency and naturalness (0-1)',
-	handler: async (ctx, input, output) => {
-		const completion = await client.chat.completions.create({
-			model: 'gpt-5-nano',
-			response_format: { type: 'json_object' },
-			messages: [
-				{
-					role: 'system',
-					content: `Rate this ${input.toLanguage} translation's fluency (0-1). Consider grammar, naturalness, and meaning preservation. Respond: { "score": 0.0-1.0, "reason": "brief explanation" }`,
-				},
-				{ role: 'user', content: `Original: "${input.text}"\n\nTranslation: "${output.translation}"` },
-			],
-		});
-
-		const result = JSON.parse(completion.choices[0]?.message?.content ?? '{}') as {
-			score: number;
-			reason: string;
-		};
-
-		return { passed: result.score >= 0.5, score: result.score, metadata: { reason: result.reason } };
+		return { passed: result.correct ?? false, metadata: { reason: result.reason ?? 'No response' } };
 	},
 });

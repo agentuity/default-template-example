@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-keyvalue-get
 description: Get a value from the keyvalue storage. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.106"
+version: "0.0.109"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "<namespace> <key>"

@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-profile-current
 description: Show the name of the currently active profile
-version: "0.0.106"
+version: "0.0.109"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 metadata:

@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-secret-import
 description: Import secrets from a file to cloud and local .env. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.106"
+version: "0.0.109"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "<file>"

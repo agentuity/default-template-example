@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-agent-list
 description: List agents for a project. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.106"
+version: "0.0.109"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 metadata:

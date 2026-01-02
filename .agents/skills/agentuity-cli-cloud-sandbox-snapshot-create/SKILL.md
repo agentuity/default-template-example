@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-sandbox-snapshot-create
 description: Create a snapshot from a sandbox. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.106"
+version: "0.0.109"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "<sandboxId>"

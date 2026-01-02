@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-profile-delete
 description: Delete a configuration profile
-version: "0.0.106"
+version: "0.0.109"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "[name]"
