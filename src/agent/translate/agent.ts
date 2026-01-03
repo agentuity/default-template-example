@@ -7,13 +7,11 @@ import { s } from '@agentuity/schema';
 import OpenAI from 'openai';
 
 /**
- * AI Gateway: Access multiple AI providers (OpenAI, Anthropic, Google, etc.) with just your
- * Agentuity SDK key - no need for separate provider API keys. Switch between models freely
- * to compare speed, quality, and cost tradeoffs.
+ * AI Gateway: Access OpenAI, Anthropic, Google, and other LLM providers with just your
+ * Agentuity SDK key. No separate provider API keys needed.
  */
 const client = new OpenAI();
 
-// Available models - different speed/quality/cost tradeoffs (all accessible via AI Gateway)
 const MODELS = ['gpt-5-nano', 'gpt-5-mini', 'gpt-5'] as const;
 
 // History entry stored in thread state
@@ -62,7 +60,7 @@ const agent = createAgent('translate', {
 		output: AgentOutput,
 	},
 	handler: async (ctx, { text, toLanguage = 'Spanish', model = 'gpt-5-nano', command = 'translate' }) => {
-		// Handle clear command - resets translation history
+		// Handle clear command
 		if (command === 'clear') {
 			await ctx.thread.state.delete('history');
 			ctx.logger.info('History cleared');

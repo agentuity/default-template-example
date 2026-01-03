@@ -9,6 +9,9 @@ const DEFAULT_TEXT =
 const LANGUAGES = ['Spanish', 'French', 'German', 'Chinese'] as const;
 const MODELS = ['gpt-5-nano', 'gpt-5-mini', 'gpt-5'] as const;
 
+// Format latency: show seconds if >= 1000ms
+const formatLatency = (ms: number) => (ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${ms}ms`);
+
 export function App() {
 	const [text, setText] = useState(DEFAULT_TEXT);
 	const [toLanguage, setToLanguage] = useState<(typeof LANGUAGES)[number]>('Spanish');
@@ -182,11 +185,11 @@ export function App() {
 					<div className="history-container">
 						{result?.history && result.history.length > 0 ? (
 							<div className="history-list">
-								{result.history.map((entry, index) => (
+								{[...result.history].reverse().map((entry, index) => (
 									<div
 										key={`${entry.timestamp}-${index}`}
 										className="history-item"
-										data-tooltip={`Model: ${entry.model}\nTokens: ${entry.tokens}\nLatency: ${entry.latencyMs}ms`}
+										data-tooltip={`Model: ${entry.model}\nTokens: ${entry.tokens}\nLatency: ${formatLatency(entry.latencyMs)}`}
 									>
 										<span className="history-text">{entry.text}</span>
 										<span className="history-arrow">→</span>
@@ -226,16 +229,6 @@ export function App() {
 									<>
 										Frontend uses <code>useAPI()</code> for typed API calls with automatic loading
 										state.
-									</>
-								),
-							},
-							{
-								key: 'evals',
-								title: 'Automatic Evaluations',
-								text: (
-									<>
-										Two evals run in background: <code>correct-language</code> (binary) and{' '}
-										<code>politeness</code> (score).
 									</>
 								),
 							},
