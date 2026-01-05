@@ -5,6 +5,7 @@
  */
 
 import type { AgentuityConfig } from '@agentuity/cli';
+import tailwindcss from '@tailwindcss/vite';
 
 export default {
 	/**
@@ -31,5 +32,5 @@ export default {
 	 *
 	 * @see https://vitejs.dev/plugins/
 	 */
-	// plugins: [],
+	plugins: [tailwindcss()],
 } satisfies AgentuityConfig;

@@ -1,26 +1,37 @@
-import { type ChangeEvent, useCallback, useState } from 'react';
-import { useAPI } from '@agentuity/react';
-import './App.css'; // Styles for this component
+import { useAPI } from "@agentuity/react";
+import { type ChangeEvent, useCallback, useState } from "react";
+import "./App.css"; // Styles for this component
 
 const WORKBENCH_PATH = process.env.AGENTUITY_PUBLIC_WORKBENCH_PATH;
 
 const DEFAULT_TEXT =
-	'Welcome to Agentuity! This translation agent shows what you can build with the platform. It connects to AI models through our gateway, tracks usage with thread state, and runs quality checks automatically. Try translating this text into different languages to see the agent in action, and check the terminal for more details.';
+	"Welcome to Agentuity! This translation agent shows what you can build with the platform. It connects to AI models through our gateway, tracks usage with thread state, and runs quality checks automatically. Try translating this text into different languages to see the agent in action, and check the terminal for more details.";
 
-const LANGUAGES = ['Spanish', 'French', 'German', 'Chinese'] as const;
-const MODELS = ['gpt-5-nano', 'gpt-5-mini', 'gpt-5'] as const;
+const LANGUAGES = ["Spanish", "French", "German", "Chinese"] as const;
+const MODELS = ["gpt-5-nano", "gpt-5-mini", "gpt-5"] as const;
 
 export function App() {
 	const [text, setText] = useState(DEFAULT_TEXT);
-	const [toLanguage, setToLanguage] = useState<(typeof LANGUAGES)[number]>('Spanish');
-	const [model, setModel] = useState<(typeof MODELS)[number]>('gpt-5-nano');
-	const [hoveredHistoryIndex, setHoveredHistoryIndex] = useState<number | null>(null);
-	const [hoveredBadge, setHoveredBadge] = useState<'thread' | 'session' | null>(null);
+	const [toLanguage, setToLanguage] =
+		useState<(typeof LANGUAGES)[number]>("Spanish");
+	const [model, setModel] = useState<(typeof MODELS)[number]>("gpt-5-nano");
+	const [hoveredHistoryIndex, setHoveredHistoryIndex] = useState<number | null>(
+		null,
+	);
+	const [hoveredBadge, setHoveredBadge] = useState<"thread" | "session" | null>(
+		null,
+	);
 
 	// RESTful API hooks for translation operations
-	const { data: historyData, refetch: refetchHistory } = useAPI('GET /api/translate/history');
-	const { data: translateResult, invoke: translate, isLoading } = useAPI('POST /api/translate');
-	const { invoke: clearHistory } = useAPI('DELETE /api/translate/history');
+	const { data: historyData, refetch: refetchHistory } = useAPI(
+		"GET /api/translate/history",
+	);
+	const {
+		data: translateResult,
+		invoke: translate,
+		isLoading,
+	} = useAPI("POST /api/translate");
+	const { invoke: clearHistory } = useAPI("DELETE /api/translate/history");
 
 	// Prefer fresh data from translation, fall back to initial fetch
 	const history = translateResult?.history ?? historyData?.history ?? [];
@@ -73,12 +84,14 @@ export function App() {
 				<div className="card card-interactive">
 					<div className="controls-row">
 						<span className="control-label">
-							Translate to{' '}
+							Translate to{" "}
 							<select
 								className="inline-select"
 								disabled={isLoading}
 								onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-									setToLanguage(e.currentTarget.value as (typeof LANGUAGES)[number])
+									setToLanguage(
+										e.currentTarget.value as (typeof LANGUAGES)[number],
+									)
 								}
 								value={toLanguage}
 							>
@@ -91,7 +104,7 @@ export function App() {
 						</span>
 
 						<span className="control-label">
-							using{' '}
+							using{" "}
 							<select
 								className="inline-select"
 								disabled={isLoading}
@@ -110,12 +123,12 @@ export function App() {
 							<div className="glow-bg" />
 							<div className="glow-effect" />
 							<button
-								className={`button ${isLoading ? 'disabled' : ''}`}
+								className={`button ${isLoading ? "disabled" : ""}`}
 								disabled={isLoading}
 								onClick={handleTranslate}
 								type="button"
 							>
-								{isLoading ? 'Translating...' : 'Translate'}
+								{isLoading ? "Translating..." : "Translate"}
 							</button>
 						</div>
 					</div>
@@ -123,26 +136,25 @@ export function App() {
 					<textarea
 						className="textarea"
 						disabled={isLoading}
-						onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setText(e.currentTarget.value)}
+						onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+							setText(e.currentTarget.value)
+						}
 						placeholder="Enter text to translate..."
 						rows={4}
 						value={text}
 					/>
 
-					{isLoading ? (
+					{!isLoading ? (
 						<div className="output">
-							<span className="loading-text">
+							<span data-loading className="loading-text">
 								Translating to {toLanguage}
-								<span className="loading-dots">
-									<span>.</span>
-									<span>.</span>
-									<span>.</span>
-								</span>
 							</span>
 						</div>
 					) : translateResult?.translation ? (
 						<div className="result">
-							<div className="translation-output">{translateResult.translation}</div>
+							<div className="translation-output">
+								{translateResult.translation}
+							</div>
 							<div className="result-meta">
 								{translateResult.tokens > 0 && (
 									<>
@@ -155,26 +167,31 @@ export function App() {
 								{translateResult.threadId && (
 									<span
 										className="id-badge"
-										onMouseEnter={() => setHoveredBadge('thread')}
+										onMouseEnter={() => setHoveredBadge("thread")}
 										onMouseLeave={() => setHoveredBadge(null)}
 									>
-										{hoveredBadge === 'thread' && (
+										{hoveredBadge === "thread" && (
 											<div className="id-badge-tooltip">
 												<div className="badge-tooltip-title">Thread ID</div>
 												<p className="badge-tooltip-desc">
-													Your <strong>conversation context</strong> that persists across requests.
-													All translations share this thread, letting the agent remember history.
+													Your <strong>conversation context</strong> that
+													persists across requests. All translations share this
+													thread, letting the agent remember history.
 												</p>
 												<p className="badge-tooltip-desc">
-													Each request gets a unique session ID, but the <em>thread stays the same</em>.
+													Each request gets a unique session ID, but the{" "}
+													<em>thread stays the same</em>.
 												</p>
 												<div className="badge-tooltip-id">
 													<span className="badge-tooltip-id-label">ID</span>
-													<code className="badge-tooltip-id-value">{translateResult.threadId}</code>
+													<code className="badge-tooltip-id-value">
+														{translateResult.threadId}
+													</code>
 												</div>
 											</div>
 										)}
-										Thread: <strong>{translateResult.threadId.slice(0, 12)}...</strong>
+										Thread:{" "}
+										<strong>{translateResult.threadId.slice(0, 12)}...</strong>
 									</span>
 								)}
 								{translateResult.sessionId && (
@@ -182,26 +199,33 @@ export function App() {
 										<span className="separator">|</span>
 										<span
 											className="id-badge"
-											onMouseEnter={() => setHoveredBadge('session')}
+											onMouseEnter={() => setHoveredBadge("session")}
 											onMouseLeave={() => setHoveredBadge(null)}
 										>
-											{hoveredBadge === 'session' && (
+											{hoveredBadge === "session" && (
 												<div className="id-badge-tooltip">
 													<div className="badge-tooltip-title">Session ID</div>
 													<p className="badge-tooltip-desc">
-														A <strong>unique identifier</strong> for this specific request.
-														Useful for debugging and tracing individual operations in your agent logs.
+														A <strong>unique identifier</strong> for this
+														specific request. Useful for debugging and tracing
+														individual operations in your agent logs.
 													</p>
 													<p className="badge-tooltip-desc">
-														Unlike threads, sessions are <em>unique per request</em>.
+														Unlike threads, sessions are{" "}
+														<em>unique per request</em>.
 													</p>
 													<div className="badge-tooltip-id">
 														<span className="badge-tooltip-id-label">ID</span>
-														<code className="badge-tooltip-id-value">{translateResult.sessionId}</code>
+														<code className="badge-tooltip-id-value">
+															{translateResult.sessionId}
+														</code>
 													</div>
 												</div>
 											)}
-											Session: <strong>{translateResult.sessionId.slice(0, 12)}...</strong>
+											Session:{" "}
+											<strong>
+												{translateResult.sessionId.slice(0, 12)}...
+											</strong>
 										</span>
 									</>
 								)}
@@ -216,7 +240,11 @@ export function App() {
 					<div className="section-header">
 						<h3 className="section-title">Recent Translations</h3>
 						{history.length > 0 && (
-							<button className="clear-btn" onClick={handleClearHistory} type="button">
+							<button
+								className="clear-btn"
+								onClick={handleClearHistory}
+								type="button"
+							>
 								Clear
 							</button>
 						)}
@@ -240,19 +268,25 @@ export function App() {
 													</div>
 													<div className="tooltip-row">
 														<span className="tooltip-label">Tokens</span>
-														<span className="tooltip-value">{entry.tokens}</span>
+														<span className="tooltip-value">
+															{entry.tokens}
+														</span>
 													</div>
 												</div>
 												<div className="tooltip-divider" />
 												<div className="tooltip-section">
 													<div className="tooltip-row">
 														<span className="tooltip-label">Thread</span>
-														<span className="tooltip-value tooltip-id">{threadId?.slice(0, 12)}...</span>
+														<span className="tooltip-value tooltip-id">
+															{threadId?.slice(0, 12)}...
+														</span>
 														<span className="tooltip-hint">(same for all)</span>
 													</div>
 													<div className="tooltip-row">
 														<span className="tooltip-label">Session</span>
-														<span className="tooltip-value tooltip-id">{entry.sessionId.slice(0, 12)}...</span>
+														<span className="tooltip-value tooltip-id">
+															{entry.sessionId.slice(0, 12)}...
+														</span>
 														<span className="tooltip-hint">(unique)</span>
 													</div>
 												</div>
@@ -261,7 +295,9 @@ export function App() {
 										<span className="history-text">{entry.text}</span>
 										<span className="history-arrow">→</span>
 										<span className="history-lang">{entry.toLanguage}</span>
-										<span className="history-translation">{entry.translation}</span>
+										<span className="history-translation">
+											{entry.translation}
+										</span>
 										<span className="history-session">
 											{entry.sessionId.slice(0, 8)}...
 										</span>
@@ -275,46 +311,49 @@ export function App() {
 				</div>
 
 				<div className="card">
-					<h3 className="section-title section-title-standalone">Features Demonstrated</h3>
+					<h3 className="section-title section-title-standalone">
+						Features Demonstrated
+					</h3>
 
 					<div className="steps-list">
 						{[
 							{
-								key: 'schemas',
-								title: 'Typed Schemas',
+								key: "schemas",
+								title: "Typed Schemas",
 								text: (
 									<>
-										Uses <code>@agentuity/schema</code> for type-safe validation with{' '}
-										<code>s.string()</code> and <code>s.object()</code>.
+										Uses <code>@agentuity/schema</code> for type-safe validation
+										with <code>s.string()</code> and <code>s.object()</code>.
 									</>
 								),
 							},
 							{
-								key: 'useapi',
-								title: 'useAPI Hook',
+								key: "useapi",
+								title: "useAPI Hook",
 								text: (
 									<>
-										Frontend uses <code>useAPI()</code> for typed API calls with automatic loading
-										state.
+										Frontend uses <code>useAPI()</code> for typed API calls with
+										automatic loading state.
 									</>
 								),
 							},
 							{
-								key: 'threads',
-								title: 'Thread & Session State',
+								key: "threads",
+								title: "Thread & Session State",
 								text: (
 									<>
-										Translation history persists in thread state. Thread ID stays the same across
-										requests; session ID changes each time.
+										Translation history persists in thread state. Thread ID
+										stays the same across requests; session ID changes each
+										time.
 									</>
 								),
 							},
 							WORKBENCH_PATH
 								? {
-										key: 'workbench',
+										key: "workbench",
 										title: (
 											<>
-												Try{' '}
+												Try{" "}
 												<a href={WORKBENCH_PATH} className="workbench-link">
 													Workbench
 												</a>
