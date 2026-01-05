@@ -1,7 +1,6 @@
 /**
  * Translation Agent: translates text using AI models via the Agentuity AI Gateway.
  * Stores translation history in thread state for persistence across requests.
- *
  * Uses @agentuity/schema - a lightweight, built-in schema library.
  */
 import { createAgent } from '@agentuity/runtime';

@@ -220,7 +220,7 @@ if (isDevelopment() && process.env.VITE_PORT) {
 const { default: router_0 } = await import('../api/index.js');
 app.route('/api', router_0);
 
-const hasWorkbench = false;
+const hasWorkbench = true;
 if (hasWorkbench) {
 	// Mount workbench API routes (/_agentuity/workbench/*)
 	const workbenchRouter = createWorkbenchRouter();

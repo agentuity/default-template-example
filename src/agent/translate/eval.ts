@@ -17,7 +17,7 @@ export default agent;
  * Checks if the translation is concise without unnecessary preamble or filler.
  * Uses middleware to transform agent I/O to the eval's expected format.
  */
-export const concisenessEval = agent.createEval(
+export const concisenessEval = agent.createEval( // TODO: update to adversarial
 	conciseness<typeof AgentInput, typeof AgentOutput>({
 		middleware: {
 			transformInput: (input) => ({
@@ -85,6 +85,7 @@ Is this text written in ${targetLanguage}?`,
 
 		return {
 			passed: result.isCorrectLanguage,
+			// TODO: move reason here
 			metadata: {
 				reason: result.reason,
 				targetLanguage,

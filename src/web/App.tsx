@@ -281,11 +281,11 @@ export function App() {
 						{[
 							{
 								key: 'schemas',
-								title: 'Zod Schemas',
+								title: 'Typed Schemas',
 								text: (
 									<>
-										Uses Zod with <code>z.string()</code> and <code>.pick()</code> for type-safe
-										validation. Routes derive schemas from agent output.
+										Uses <code>@agentuity/schema</code> for type-safe validation with{' '}
+										<code>s.string()</code> and <code>s.object()</code>.
 									</>
 								),
 							},

@@ -1,11 +1,9 @@
 /**
- * RESTful API routes for the translation agent.
- * Uses .pick() to derive route schemas from the agent's output schema.
- * The agent has single responsibility (translate), routes handle state operations.
+ * API routes for the translation agent.
+ * Routes handle state operations (get/clear history); the agent handles translation.
  */
 import { createRouter, validator } from '@agentuity/runtime';
-// Import from eval.ts to ensure evals are registered with the agent
-import translate from '../agent/translate/eval';
+import translate from '../agent/translate';
 import { AgentOutput, type HistoryEntry } from '../agent/translate/agent';
 
 const api = createRouter();
