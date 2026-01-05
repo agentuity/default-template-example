@@ -1,6 +1,6 @@
 import { useAPI } from "@agentuity/react";
 import { type ChangeEvent, useCallback, useState } from "react";
-import "./App.css"; // Styles for this component
+import "./App.css";
 
 const WORKBENCH_PATH = process.env.AGENTUITY_PUBLIC_WORKBENCH_PATH;
 
@@ -47,13 +47,13 @@ export function App() {
 	}, [clearHistory, refetchHistory]);
 
 	return (
-		<div className="app-container">
-			<div className="content-wrapper">
-				<div className="header">
+		<div className="text-white flex font-sans justify-center min-h-screen">
+			<div className="flex flex-col gap-8 max-w-3xl p-16 w-full">
+				<div className="items-center flex flex-col gap-2 justify-center mb-8 relative text-center">
 					<svg
 						aria-hidden="true"
 						aria-label="Agentuity Logo"
-						className="logo"
+						className="h-auto mb-4 w-12"
 						fill="none"
 						height="191"
 						viewBox="0 0 220 191"
@@ -74,19 +74,18 @@ export function App() {
 						/>
 					</svg>
 
-					<h1 className="title">Translation Agent</h1>
+					<h1 className="text-5xl font-thin m-0">Translation Agent</h1>
 
-					<p className="subtitle">
-						Powered by <span className="italic">Agentuity</span>
+					<p className="text-gray-400 text-lg m-0">
+						Powered by <span className="font-serif italic font-thin">Agentuity</span>
 					</p>
 				</div>
 
-				<div className="card card-interactive">
-					<div className="controls-row">
-						<span className="control-label">
-							Translate to{" "}
+				<div className="bg-black border border-gray-900 rounded-lg p-8 shadow-2xl flex flex-col gap-6 overflow-hidden">
+					<div className="items-center flex flex-wrap gap-1.5 text-gray-400">
+							<span>Translate to</span>
 							<select
-								className="inline-select"
+								className="appearance-none bg-transparent border-0 border-b border-dashed border-gray-700 text-white cursor-pointer font-normal outline-none hover:border-b-cyan-400 focus:border-b-cyan-400 focus:border-solid [&_option]:bg-gray-950 [&_option]:text-white -mb-0.5"
 								disabled={isLoading}
 								onChange={(e: ChangeEvent<HTMLSelectElement>) =>
 									setToLanguage(
@@ -101,12 +100,10 @@ export function App() {
 									</option>
 								))}
 							</select>
-						</span>
-
-						<span className="control-label">
-							using{" "}
+							<span>using
+							</span>
 							<select
-								className="inline-select"
+								className="appearance-none bg-transparent border-0 border-b border-dashed border-gray-700 text-white cursor-pointer font-normal outline-none hover:border-b-cyan-400 focus:border-b-cyan-400 focus:border-solid [&_option]:bg-gray-950 [&_option]:text-white -mb-0.5"
 								disabled={isLoading}
 								onChange={(e: ChangeEvent<HTMLSelectElement>) =>
 									setModel(e.currentTarget.value as (typeof MODELS)[number])
@@ -117,13 +114,14 @@ export function App() {
 								<option value="gpt-5-mini">GPT-5 Mini</option>
 								<option value="gpt-5">GPT-5</option>
 							</select>
-						</span>
 
-						<div className="glow-btn">
-							<div className="glow-bg" />
-							<div className="glow-effect" />
+						<div className="relative group ml-auto">
+							<div className="absolute inset-0 bg-linear-to-r from-cyan-800 via-blue-500 to-purple-600 rounded-lg opacity-75 group-hover:opacity-100 blur-2xl group-hover:blur-3xl transition-all duration-700" />
+
+							<div className="absolute inset-0 bg-cyan-600/50 rounded-lg opacity-50 blur-lg" />
+
 							<button
-								className={`button ${isLoading ? "disabled" : ""}`}
+								className="relative flex items-center justify-center w-full md:w-auto gap-2 font-semibold text-white px-4 py-2 bg-gray-950 rounded-lg overflow-hidden shadow-2xl cursor-pointer"
 								disabled={isLoading}
 								onClick={handleTranslate}
 								type="button"
@@ -134,7 +132,7 @@ export function App() {
 					</div>
 
 					<textarea
-						className="textarea"
+						className="bg-gray-950 border border-gray-800 rounded-md text-white outline-none resize-y py-3 px-4 min-h-28 focus:border-blue-500"
 						disabled={isLoading}
 						onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
 							setText(e.currentTarget.value)
@@ -144,47 +142,47 @@ export function App() {
 						value={text}
 					/>
 
-					{!isLoading ? (
-						<div className="output">
-							<span data-loading className="loading-text">
+					{isLoading ? (
+						<div className="bg-gray-950 border border-gray-800 rounded-md text-gray-600 min-h-12 py-3 px-4">
+							<span className="text-cyan-400" data-loading>
 								Translating to {toLanguage}
 							</span>
 						</div>
 					) : translateResult?.translation ? (
-						<div className="result">
-							<div className="translation-output">
+						<div className="flex flex-col gap-3">
+							<div className="bg-gray-950 border border-gray-800 rounded-md text-cyan-400 py-3 px-4">
 								{translateResult.translation}
 							</div>
-							<div className="result-meta">
+							<div className="text-gray-500 flex flex-wrap text-xs gap-2 [&_strong]:text-gray-400">
 								{translateResult.tokens > 0 && (
 									<>
 										<span>
 											Tokens: <strong>{translateResult.tokens}</strong>
 										</span>
-										<span className="separator">|</span>
+										<span className="text-gray-700">|</span>
 									</>
 								)}
 								{translateResult.threadId && (
 									<span
-										className="id-badge"
+										className="border-b border-dashed border-gray-700 cursor-help relative transition-colors duration-200 pb-px hover:border-b-cyan-400"
 										onMouseEnter={() => setHoveredBadge("thread")}
 										onMouseLeave={() => setHoveredBadge(null)}
 									>
 										{hoveredBadge === "thread" && (
-											<div className="id-badge-tooltip">
-												<div className="badge-tooltip-title">Thread ID</div>
-												<p className="badge-tooltip-desc">
+											<div className="absolute left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-800 rounded-lg p-4 text-sm leading-normal z-10 mb-2 shadow-2xl text-left w-80 bottom-full">
+												<div className="text-white font-semibold text-sm mb-2">Thread ID</div>
+												<p className="text-gray-400 text-sm mb-2 [&_strong]:text-gray-200 [&_strong]:font-medium">
 													Your <strong>conversation context</strong> that
 													persists across requests. All translations share this
 													thread, letting the agent remember history.
 												</p>
-												<p className="badge-tooltip-desc">
+												<p className="text-gray-400 text-sm mb-3 [&_em]:text-gray-200 [&_em]:not-italic [&_em]:font-semibold">
 													Each request gets a unique session ID, but the{" "}
 													<em>thread stays the same</em>.
 												</p>
-												<div className="badge-tooltip-id">
-													<span className="badge-tooltip-id-label">ID</span>
-													<code className="badge-tooltip-id-value">
+												<div className="flex flex-col gap-1.5 pt-3 border-t border-gray-800">
+													<span className="text-gray-500 uppercase tracking-wide text-xs">ID</span>
+													<code className="text-cyan-400 font-mono bg-gray-800 rounded break-all text-xs py-1.5 px-2">
 														{translateResult.threadId}
 													</code>
 												</div>
@@ -196,27 +194,27 @@ export function App() {
 								)}
 								{translateResult.sessionId && (
 									<>
-										<span className="separator">|</span>
+										<span className="text-gray-700">|</span>
 										<span
-											className="id-badge"
+											className="border-b border-dashed border-gray-700 cursor-help relative transition-colors duration-200 pb-px hover:border-b-cyan-400"
 											onMouseEnter={() => setHoveredBadge("session")}
 											onMouseLeave={() => setHoveredBadge(null)}
 										>
 											{hoveredBadge === "session" && (
-												<div className="id-badge-tooltip">
-													<div className="badge-tooltip-title">Session ID</div>
-													<p className="badge-tooltip-desc">
+												<div className="absolute left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-800 rounded-lg p-4 text-sm leading-normal z-10 mb-2 shadow-2xl text-left w-80 bottom-full">
+													<div className="text-white font-semibold text-sm mb-2">Session ID</div>
+													<p className="text-gray-400 text-sm mb-2 [&_strong]:text-gray-200 [&_strong]:font-medium">
 														A <strong>unique identifier</strong> for this
 														specific request. Useful for debugging and tracing
 														individual operations in your agent logs.
 													</p>
-													<p className="badge-tooltip-desc">
+													<p className="text-gray-400 text-sm mb-3 [&_em]:text-gray-200 [&_em]:not-italic [&_em]:font-semibold">
 														Unlike threads, sessions are{" "}
 														<em>unique per request</em>.
 													</p>
-													<div className="badge-tooltip-id">
-														<span className="badge-tooltip-id-label">ID</span>
-														<code className="badge-tooltip-id-value">
+													<div className="flex flex-col gap-1.5 pt-3 border-t border-gray-800">
+														<span className="text-gray-500 uppercase tracking-wide text-xs">ID</span>
+														<code className="text-cyan-400 font-mono bg-gray-800 rounded break-all text-xs py-1.5 px-2">
 															{translateResult.sessionId}
 														</code>
 													</div>
@@ -232,16 +230,16 @@ export function App() {
 							</div>
 						</div>
 					) : (
-						<div className="output">Translation will appear here</div>
+						<div className="bg-gray-950 border border-gray-800 rounded-md text-gray-600 min-h-12 py-3 px-4">Translation will appear here</div>
 					)}
 				</div>
 
-				<div className="card">
-					<div className="section-header">
-						<h3 className="section-title">Recent Translations</h3>
+				<div className="bg-black border border-gray-900 rounded-lg p-8">
+					<div className="items-center flex justify-between mb-6">
+						<h3 className="text-white text-xl font-normal leading-none m-0">Recent Translations</h3>
 						{history.length > 0 && (
 							<button
-								className="clear-btn"
+								className="bg-transparent border border-gray-800 rounded text-gray-400 cursor-pointer text-xs transition-all duration-200 py-1.5 px-3 hover:bg-gray-900 hover:border-gray-700 hover:text-white"
 								onClick={handleClearHistory}
 								type="button"
 							>
@@ -249,81 +247,84 @@ export function App() {
 							</button>
 						)}
 					</div>
-					<div className="history-container">
+					<div className="bg-gray-950 border border-gray-800 rounded-md py-3 px-4">
 						{history.length > 0 ? (
-							<div className="history-list">
+							<div className="flex flex-col gap-3">
 								{[...history].reverse().map((entry, index) => (
-									<div
+									<button
 										key={`${entry.timestamp}-${index}`}
-										className="history-item"
+										type="button"
+										tabIndex={0}
+										className="items-center grid text-sm gap-3 p-2 -m-2 rounded cursor-help relative transition-colors duration-150 grid-cols-[1fr_auto_auto_1fr_auto] hover:bg-gray-900 focus:outline-none"
 										onMouseEnter={() => setHoveredHistoryIndex(index)}
 										onMouseLeave={() => setHoveredHistoryIndex(null)}
+										aria-label={`Translation from ${entry.text} to ${entry.toLanguage}: ${entry.translation}`}
 									>
 										{hoveredHistoryIndex === index && (
-											<div className="history-tooltip">
-												<div className="tooltip-section">
-													<div className="tooltip-row">
-														<span className="tooltip-label">Model</span>
-														<span className="tooltip-value">{entry.model}</span>
+											<div className="absolute left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-800 rounded-lg p-3 text-xs z-10 mb-2 shadow-2xl min-w-52 bottom-full">
+												<div className="flex flex-col gap-1.5">
+													<div className="flex items-center gap-2">
+														<span className="text-gray-500 min-w-14">Model</span>
+														<span className="text-gray-200 font-medium">{entry.model}</span>
 													</div>
-													<div className="tooltip-row">
-														<span className="tooltip-label">Tokens</span>
-														<span className="tooltip-value">
+													<div className="flex items-center gap-2">
+														<span className="text-gray-500 min-w-14">Tokens</span>
+														<span className="text-gray-200 font-medium">
 															{entry.tokens}
 														</span>
 													</div>
 												</div>
-												<div className="tooltip-divider" />
-												<div className="tooltip-section">
-													<div className="tooltip-row">
-														<span className="tooltip-label">Thread</span>
-														<span className="tooltip-value tooltip-id">
+												<div className="h-px bg-gray-800 my-2" />
+												<div className="flex flex-col gap-1.5">
+													<div className="flex items-center gap-2">
+														<span className="text-gray-500 min-w-14">Thread</span>
+														<span className="text-gray-200 font-medium font-mono bg-gray-800 rounded py-0.5 px-1.5">
 															{threadId?.slice(0, 12)}...
 														</span>
-														<span className="tooltip-hint">(same for all)</span>
+														<span className="text-gray-600 italic text-xs">(same for all)</span>
 													</div>
-													<div className="tooltip-row">
-														<span className="tooltip-label">Session</span>
-														<span className="tooltip-value tooltip-id">
+													<div className="flex items-center gap-2">
+														<span className="text-gray-500 min-w-14">Session</span>
+														<span className="text-gray-200 font-medium font-mono bg-gray-800 rounded py-0.5 px-1.5">
 															{entry.sessionId.slice(0, 12)}...
 														</span>
-														<span className="tooltip-hint">(unique)</span>
+														<span className="text-gray-600 italic text-xs">(unique)</span>
 													</div>
 												</div>
 											</div>
 										)}
-										<span className="history-text">{entry.text}</span>
-										<span className="history-arrow">→</span>
-										<span className="history-lang">{entry.toLanguage}</span>
-										<span className="history-translation">
+										<span className="text-gray-500 overflow-hidden text-ellipsis whitespace-nowrap">{entry.text}</span>
+										<span className="text-gray-700">→</span>
+										<span className="bg-gray-900 border border-gray-800 rounded text-gray-400 text-center min-w-18 py-1 px-2.5 text-xs">{entry.toLanguage}</span>
+										<span className="text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">
 											{entry.translation}
 										</span>
-										<span className="history-session">
+										<span className="text-gray-600 font-mono text-xs">
 											{entry.sessionId.slice(0, 8)}...
 										</span>
-									</div>
+									</button>
 								))}
 							</div>
 						) : (
-							<div className="history-empty-text">History will appear here</div>
+							<div className="text-gray-600 text-sm">History will appear here</div>
 						)}
 					</div>
 				</div>
 
-				<div className="card">
-					<h3 className="section-title section-title-standalone">
+				<div className="bg-black border border-gray-900 rounded-lg p-8">
+					<h3 className="text-white text-xl font-normal leading-none m-0 mb-6">
 						Features Demonstrated
 					</h3>
 
-					<div className="steps-list">
+					<div className="flex flex-col gap-6">
 						{[
 							{
 								key: "schemas",
 								title: "Typed Schemas",
 								text: (
 									<>
-										Uses <code>@agentuity/schema</code> for type-safe validation
-										with <code>s.string()</code> and <code>s.object()</code>.
+										Uses <code className="text-white">@agentuity/schema</code> for type-safe validation
+										with <code className="text-white">s.string()</code> and <code className="text-white">s.object()</code>.
 									</>
 								),
 							},
@@ -332,7 +333,7 @@ export function App() {
 								title: "useAPI Hook",
 								text: (
 									<>
-										Frontend uses <code>useAPI()</code> for typed API calls with
+										Frontend uses <code className="text-white">useAPI()</code> for typed API calls with
 										automatic loading state.
 									</>
 								),
@@ -354,7 +355,7 @@ export function App() {
 										title: (
 											<>
 												Try{" "}
-												<a href={WORKBENCH_PATH} className="workbench-link">
+												<a href={WORKBENCH_PATH} className="underline relative">
 													Workbench
 												</a>
 											</>
@@ -363,16 +364,16 @@ export function App() {
 									}
 								: null,
 						]
-							.filter(Boolean)
+							.filter((step): step is NonNullable<typeof step> => Boolean(step))
 							.map((step) => (
-								<div key={step!.key} className="step">
-									<div className="step-icon">
+								<div key={step.key} className="items-start flex gap-3">
+									<div className="items-center bg-green-950 border border-green-500 rounded flex size-4 shrink-0 justify-center">
 										<svg
 											aria-hidden="true"
-											className="checkmark"
+											className="size-2.5"
 											fill="none"
 											height="24"
-											stroke="#00c951"
+											stroke="var(--color-green-500)"
 											strokeLinecap="round"
 											strokeLinejoin="round"
 											strokeWidth="2"
@@ -385,8 +386,8 @@ export function App() {
 									</div>
 
 									<div>
-										<h4 className="step-title">{step!.title}</h4>
-										<p className="step-text">{step!.text}</p>
+										<h4 className="text-white text-sm font-normal -mt-0.5 mb-0.5">{step.title}</h4>
+										<p className="text-gray-400 text-xs">{step.text}</p>
 									</div>
 								</div>
 							))}
