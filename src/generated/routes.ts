@@ -91,20 +91,23 @@ declare module '@agentuity/react' {
 	 */
 	export interface RouteRegistry {
 	'POST /api/translate': {
-		inputSchema: POSTApiTranslateInputSchema;
-		outputSchema: POSTApiTranslateOutputSchema;
-		stream: typeof translate extends { stream?: infer S } ? S : false;
-	};
+				inputSchema: POSTApiTranslateInputSchema;
+				outputSchema: POSTApiTranslateOutputSchema;
+				stream: typeof translate extends { stream?: infer S } ? S : false;
+				params: never;
+			};
 	'GET /api/translate/history': {
-		inputSchema: GETApiTranslateHistoryInputSchema;
-		outputSchema: GETApiTranslateHistoryOutputSchema;
-		stream: false;
-	};
+				inputSchema: GETApiTranslateHistoryInputSchema;
+				outputSchema: GETApiTranslateHistoryOutputSchema;
+				stream: false;
+				params: never;
+			};
 	'DELETE /api/translate/history': {
-		inputSchema: DELETEApiTranslateHistoryInputSchema;
-		outputSchema: DELETEApiTranslateHistoryOutputSchema;
-		stream: false;
-	};
+				inputSchema: DELETEApiTranslateHistoryInputSchema;
+				outputSchema: DELETEApiTranslateHistoryOutputSchema;
+				stream: false;
+				params: never;
+			};
 	}
 	
 	/**
@@ -137,16 +140,16 @@ declare module '@agentuity/react' {
 				/**
 				 * Route: DELETE /api/translate/history
 				 */
-				delete: { input: DELETEApiTranslateHistoryInput; output: DELETEApiTranslateHistoryOutput; type: 'api' };
+				delete: { input: DELETEApiTranslateHistoryInput; output: DELETEApiTranslateHistoryOutput; type: 'api'; params: never; paramsTuple: [] };
 				/**
 				 * Route: GET /api/translate/history
 				 */
-				get: { input: GETApiTranslateHistoryInput; output: GETApiTranslateHistoryOutput; type: 'api' };
+				get: { input: GETApiTranslateHistoryInput; output: GETApiTranslateHistoryOutput; type: 'api'; params: never; paramsTuple: [] };
 			};
 			/**
 			 * Route: POST /api/translate
 			 */
-			post: { input: POSTApiTranslateInput; output: POSTApiTranslateOutput; type: 'api' };
+			post: { input: POSTApiTranslateInput; output: POSTApiTranslateOutput; type: 'api'; params: never; paramsTuple: [] };
 		};
 	}
 }
@@ -160,14 +163,17 @@ const _rpcRouteMetadata = {
 		"translate": {
 				"history": {
 						"delete": {
-								"type": "api"
+								"type": "api",
+								"path": "/api/translate/history"
 						},
 						"get": {
-								"type": "api"
+								"type": "api",
+								"path": "/api/translate/history"
 						}
 				},
 				"post": {
-						"type": "api"
+						"type": "api",
+						"path": "/api/translate"
 				}
 		}
 } as const;

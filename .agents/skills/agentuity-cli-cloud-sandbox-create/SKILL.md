@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-sandbox-create
 description: Create an interactive sandbox for multiple executions. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 metadata:
@@ -37,6 +37,7 @@ agentuity cloud sandbox create [options]
 | `--file` | array | Yes | - | Files to create in sandbox (sandbox-path:local-path) |
 | `--snapshot` | string | Yes | - | Snapshot ID or tag to restore from |
 | `--dependency` | array | Yes | - | Apt packages to install (can be specified multiple times) |
+| `--metadata` | string | Yes | - | JSON object of user-defined metadata |
 
 ## Examples
 

@@ -4,8 +4,8 @@
  * - language-match (binary - pass/fail): Did it translate to the requested language?
  */
 import { openai } from '@ai-sdk/openai';
-import { generateObject } from 'ai';
-import { z } from 'zod';
+import { generateText, Output, jsonSchema } from 'ai';
+import { s } from '@agentuity/schema';
 import { conciseness } from '@agentuity/evals';
 import agent, { AgentInput, AgentOutput } from './agent';
 
@@ -30,9 +30,20 @@ export const concisenessEval = agent.createEval(
 	})
 );
 
+// Schema for language detection result using @agentuity/schema
+const LanguageCheckSchema = s.object({
+	isCorrectLanguage: s.boolean().describe('Whether the text is in the target language'),
+	detectedLanguage: s.string().describe('The detected language of the text'),
+	reason: s.string().describe('Brief explanation'),
+});
+
+// Type for language detection result
+type LanguageCheckResult = s.infer<typeof LanguageCheckSchema>;
+
 /**
  * Custom Eval (binary): Language Match
  * Verifies the translation is in the requested target language.
+ * Uses generateText with Output.object for structured output.
  */
 export const languageMatchEval = agent.createEval('language-match', {
 	description: 'Verifies the translation is in the requested target language',
@@ -53,12 +64,11 @@ export const languageMatchEval = agent.createEval('language-match', {
 
 		const targetLanguage = input.toLanguage ?? 'Spanish';
 
-		const { object } = await generateObject({
+		// Generate structured output using jsonSchema wrapper for @agentuity/schema
+		const { output: result } = await generateText({
 			model: openai('gpt-4o-mini'),
-			schema: z.object({
-				isCorrectLanguage: z.boolean().describe('Whether the text is in the target language'),
-				detectedLanguage: z.string().describe('The detected language of the text'),
-				reason: z.string().describe('Brief explanation'),
+			output: Output.object({
+				schema: jsonSchema<LanguageCheckResult>(s.toJSONSchema(LanguageCheckSchema)),
 			}),
 			prompt: `Determine if the following text is written in ${targetLanguage}.
 
@@ -69,16 +79,16 @@ Is this text written in ${targetLanguage}?`,
 		});
 
 		ctx.logger.info('[EVAL] language-match: Completed', {
-			passed: object.isCorrectLanguage,
-			detectedLanguage: object.detectedLanguage,
+			passed: result.isCorrectLanguage,
+			detectedLanguage: result.detectedLanguage,
 		});
 
 		return {
-			passed: object.isCorrectLanguage,
+			passed: result.isCorrectLanguage,
 			metadata: {
-				reason: object.reason,
+				reason: result.reason,
 				targetLanguage,
-				detectedLanguage: object.detectedLanguage,
+				detectedLanguage: result.detectedLanguage,
 			},
 		};
 	},

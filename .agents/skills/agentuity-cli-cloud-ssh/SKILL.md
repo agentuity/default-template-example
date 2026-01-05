@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-ssh
 description: SSH into a cloud project. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "[identifier] [command]"

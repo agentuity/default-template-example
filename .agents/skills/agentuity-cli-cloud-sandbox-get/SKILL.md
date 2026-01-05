@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-sandbox-get
 description: Get information about a sandbox. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "<sandboxId>"
@@ -54,7 +54,8 @@ Returns JSON object:
   "executions": "number",
   "stdoutStreamUrl": "string",
   "stderrStreamUrl": "string",
-  "dependencies": "array"
+  "dependencies": "array",
+  "metadata": "object"
 }
 ```
 
@@ -70,3 +71,4 @@ Returns JSON object:
 | `stdoutStreamUrl` | string | URL to stdout output stream |
 | `stderrStreamUrl` | string | URL to stderr output stream |
 | `dependencies` | array | Apt packages installed |
+| `metadata` | object | User-defined metadata |

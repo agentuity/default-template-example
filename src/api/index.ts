@@ -1,6 +1,6 @@
 /**
  * RESTful API routes for the translation agent.
- * Uses Zod .pick() to derive route schemas from the agent's output schema.
+ * Uses .pick() to derive route schemas from the agent's output schema.
  * The agent has single responsibility (translate), routes handle state operations.
  */
 import { createRouter, validator } from '@agentuity/runtime';
@@ -11,11 +11,7 @@ import { AgentOutput, type HistoryEntry } from '../agent/translate/agent';
 const api = createRouter();
 
 // State subset for history endpoints (derived from AgentOutput)
-export const stateSchema = AgentOutput.pick({
-	history: true,
-	threadId: true,
-	translationCount: true,
-});
+export const stateSchema = AgentOutput.pick(['history', 'threadId', 'translationCount']);
 
 // Retrieve translation history
 api.get('/translate/history', validator({ output: stateSchema }), async (c) => {

@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-env-delete
 description: Delete an environment variable. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "<key>"

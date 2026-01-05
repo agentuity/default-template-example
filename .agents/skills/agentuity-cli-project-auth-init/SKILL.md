@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-project-auth-init
 description: Set up Agentuity Auth for your project. Requires authentication. Use for managing authentication credentials
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 metadata:

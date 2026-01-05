@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-sandbox-exec
 description: Execute a command in a running sandbox. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "<sandboxId> <command...>"

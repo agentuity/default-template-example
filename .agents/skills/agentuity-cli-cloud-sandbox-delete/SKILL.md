@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-sandbox-delete
 description: Delete a sandbox. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "<sandboxId>"
@@ -45,16 +45,10 @@ Delete a sandbox:
 bunx @agentuity/cli cloud sandbox delete abc123
 ```
 
-Delete using alias:
-
-```bash
-bunx @agentuity/cli cloud sandbox rm abc123
-```
-
 Delete without confirmation prompt:
 
 ```bash
-bunx @agentuity/cli cloud sandbox rm abc123 --confirm
+bunx @agentuity/cli cloud sandbox delete abc123 --confirm
 ```
 
 ## Output

@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-profile-use
 description: Switch to a different configuration profile
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "[name]"

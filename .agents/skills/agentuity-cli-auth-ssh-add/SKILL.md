@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-auth-ssh-add
 description: Add an SSH public key to your account (reads from file or stdin). Requires authentication. Use for managing authentication credentials
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 metadata:

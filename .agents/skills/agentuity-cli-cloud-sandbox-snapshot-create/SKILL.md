@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-sandbox-snapshot-create
 description: Create a snapshot from a sandbox. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 argument-hint: "<sandboxId>"
@@ -58,7 +58,6 @@ Returns JSON object:
 ```json
 {
   "snapshotId": "string",
-  "sandboxId": "string",
   "tag": "unknown",
   "sizeBytes": "number",
   "fileCount": "number",
@@ -69,7 +68,6 @@ Returns JSON object:
 | Field | Type | Description |
 |-------|------|-------------|
 | `snapshotId` | string | Snapshot ID |
-| `sandboxId` | string | Source sandbox ID |
 | `tag` | unknown | Snapshot tag |
 | `sizeBytes` | number | Snapshot size in bytes |
 | `fileCount` | number | Number of files in snapshot |

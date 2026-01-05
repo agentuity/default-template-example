@@ -1,9 +1,11 @@
 /**
  * Translation Agent: translates text using AI models via the Agentuity AI Gateway.
  * Stores translation history in thread state for persistence across requests.
+ *
+ * Uses @agentuity/schema - a lightweight, built-in schema library.
  */
 import { createAgent } from '@agentuity/runtime';
-import { z } from 'zod';
+import { s } from '@agentuity/schema';
 import OpenAI from 'openai';
 
 /**
@@ -16,33 +18,33 @@ const LANGUAGES = ['Spanish', 'French', 'German', 'Chinese'] as const;
 const MODELS = ['gpt-5-nano', 'gpt-5-mini', 'gpt-5'] as const;
 
 // History entry stored in thread state
-export const HistoryEntrySchema = z.object({
-	text: z.string(),
-	toLanguage: z.string(),
-	translation: z.string(),
-	sessionId: z.string(),
-	timestamp: z.string(),
-	model: z.string(),
-	tokens: z.number(),
+export const HistoryEntrySchema = s.object({
+	text: s.string().describe('Original text that was translated (truncated)'),
+	toLanguage: s.string().describe('Target language for the translation'),
+	translation: s.string().describe('Translated text result (truncated)'),
+	sessionId: s.string().describe('Session ID when the translation was made'),
+	timestamp: s.string().describe('ISO timestamp when the translation occurred'),
+	model: s.string().describe('AI model used for the translation'),
+	tokens: s.number().describe('Number of tokens used for this translation'),
 });
-export type HistoryEntry = z.infer<typeof HistoryEntrySchema>;
+export type HistoryEntry = s.infer<typeof HistoryEntrySchema>;
 
-export const AgentInput = z.object({
-	text: z.string(),
-	toLanguage: z.enum(LANGUAGES).optional(),
-	model: z.enum(MODELS).optional(),
+export const AgentInput = s.object({
+	text: s.string().describe('The text to translate'),
+	toLanguage: s.enum(LANGUAGES).optional().describe('Target language for translation'),
+	model: s.enum(MODELS).optional().describe('AI model to use for translation'),
 });
-export type AgentInputType = z.infer<typeof AgentInput>;
+export type AgentInputType = s.infer<typeof AgentInput>;
 
-export const AgentOutput = z.object({
-	translation: z.string(),
-	threadId: z.string(),
-	sessionId: z.string(),
-	translationCount: z.number(),
-	tokens: z.number(),
-	history: z.array(HistoryEntrySchema),
+export const AgentOutput = s.object({
+	translation: s.string().describe('The translated text'),
+	threadId: s.string().describe('Thread ID for conversation continuity'),
+	sessionId: s.string().describe('Current session identifier'),
+	translationCount: s.number().describe('Total translations in this thread'),
+	tokens: s.number().describe('Tokens used for this translation'),
+	history: s.array(HistoryEntrySchema).describe('Recent translation history'),
 });
-export type AgentOutputType = z.infer<typeof AgentOutput>;
+export type AgentOutputType = s.infer<typeof AgentOutput>;
 
 // Agent definition with automatic schema validation
 const agent = createAgent('translate', {

@@ -11,9 +11,9 @@ Learn more at the [Agent Skills Specification](https://agentskills.io/specificat
 
 ## Generated From
 
-- **CLI Version**: 0.0.110
-- **Generated**: 2026-01-04
-- **Total Skills**: 104
+- **CLI Version**: 0.0.111
+- **Generated**: 2026-01-05
+- **Total Skills**: 120
 
 ## Available Skills
 
@@ -78,17 +78,24 @@ Learn more at the [Agent Skills Specification](https://agentskills.io/specificat
 | [agentuity-cli-cloud-sandbox-cp](./agentuity-cli-cloud-sandbox-cp) | `agentuity cloud sandbox cp` | Copy files or directories to or from a sandbox |
 | [agentuity-cli-cloud-sandbox-create](./agentuity-cli-cloud-sandbox-create) | `agentuity cloud sandbox create` | Create an interactive sandbox for multiple executions |
 | [agentuity-cli-cloud-sandbox-delete](./agentuity-cli-cloud-sandbox-delete) | `agentuity cloud sandbox delete` | Delete a sandbox |
+| [agentuity-cli-cloud-sandbox-download](./agentuity-cli-cloud-sandbox-download) | `agentuity cloud sandbox download` | Download files from a sandbox as a compressed archive |
+| [agentuity-cli-cloud-sandbox-env](./agentuity-cli-cloud-sandbox-env) | `agentuity cloud sandbox env` | Set or delete environment variables on a sandbox |
 | [agentuity-cli-cloud-sandbox-exec](./agentuity-cli-cloud-sandbox-exec) | `agentuity cloud sandbox exec` | Execute a command in a running sandbox |
 | [agentuity-cli-cloud-sandbox-execution-get](./agentuity-cli-cloud-sandbox-execution-get) | `agentuity cloud sandbox execution get` | Get information about a specific execution |
 | [agentuity-cli-cloud-sandbox-execution-list](./agentuity-cli-cloud-sandbox-execution-list) | `agentuity cloud sandbox execution list` | List executions for a sandbox |
+| [agentuity-cli-cloud-sandbox-files](./agentuity-cli-cloud-sandbox-files) | `agentuity cloud sandbox files` | List files in a sandbox directory |
 | [agentuity-cli-cloud-sandbox-get](./agentuity-cli-cloud-sandbox-get) | `agentuity cloud sandbox get` | Get information about a sandbox |
 | [agentuity-cli-cloud-sandbox-list](./agentuity-cli-cloud-sandbox-list) | `agentuity cloud sandbox list` | List sandboxes with optional filtering |
+| [agentuity-cli-cloud-sandbox-mkdir](./agentuity-cli-cloud-sandbox-mkdir) | `agentuity cloud sandbox mkdir` | Create a directory in a sandbox |
+| [agentuity-cli-cloud-sandbox-rm](./agentuity-cli-cloud-sandbox-rm) | `agentuity cloud sandbox rm` | Remove a file from a sandbox |
+| [agentuity-cli-cloud-sandbox-rmdir](./agentuity-cli-cloud-sandbox-rmdir) | `agentuity cloud sandbox rmdir` | Remove a directory from a sandbox |
 | [agentuity-cli-cloud-sandbox-run](./agentuity-cli-cloud-sandbox-run) | `agentuity cloud sandbox run` | Run a one-shot command in a sandbox (creates, executes, dest... |
 | [agentuity-cli-cloud-sandbox-snapshot-create](./agentuity-cli-cloud-sandbox-snapshot-create) | `agentuity cloud sandbox snapshot create` | Create a snapshot from a sandbox |
 | [agentuity-cli-cloud-sandbox-snapshot-delete](./agentuity-cli-cloud-sandbox-snapshot-delete) | `agentuity cloud sandbox snapshot delete` | Delete a snapshot |
 | [agentuity-cli-cloud-sandbox-snapshot-get](./agentuity-cli-cloud-sandbox-snapshot-get) | `agentuity cloud sandbox snapshot get` | Get snapshot details |
 | [agentuity-cli-cloud-sandbox-snapshot-list](./agentuity-cli-cloud-sandbox-snapshot-list) | `agentuity cloud sandbox snapshot list` | List snapshots |
 | [agentuity-cli-cloud-sandbox-snapshot-tag](./agentuity-cli-cloud-sandbox-snapshot-tag) | `agentuity cloud sandbox snapshot tag` | Add or update a tag on a snapshot |
+| [agentuity-cli-cloud-sandbox-upload](./agentuity-cli-cloud-sandbox-upload) | `agentuity cloud sandbox upload` | Upload a compressed archive to a sandbox and extract it |
 | [agentuity-cli-cloud-scp-download](./agentuity-cli-cloud-scp-download) | `agentuity cloud scp download` | Download a file using security copy |
 | [agentuity-cli-cloud-scp-upload](./agentuity-cli-cloud-scp-upload) | `agentuity cloud scp upload` | Upload a file using security copy |
 | [agentuity-cli-cloud-secret-delete](./agentuity-cli-cloud-secret-delete) | `agentuity cloud secret delete` | Delete a secret |
@@ -127,6 +134,25 @@ Learn more at the [Agent Skills Specification](https://agentskills.io/specificat
 | Skill | Command | Description |
 |-------|---------|-------------|
 | [agentuity-cli-dev](./agentuity-cli-dev) | `agentuity dev` | Build and run the development server |
+
+### git
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| [agentuity-cli-git-account-add](./agentuity-cli-git-account-add) | `agentuity git account add` | Add a GitHub account to your organization |
+| [agentuity-cli-git-account-list](./agentuity-cli-git-account-list) | `agentuity git account list` | List GitHub accounts connected to your organizations |
+| [agentuity-cli-git-account-remove](./agentuity-cli-git-account-remove) | `agentuity git account remove` | Remove a GitHub account from your organization |
+| [agentuity-cli-git-link](./agentuity-cli-git-link) | `agentuity git link` | Link a project to a GitHub repository |
+| [agentuity-cli-git-list](./agentuity-cli-git-list) | `agentuity git list` | List GitHub repositories accessible to your organization |
+| [agentuity-cli-git-status](./agentuity-cli-git-status) | `agentuity git status` | Show GitHub connection status for current project |
+| [agentuity-cli-git-unlink](./agentuity-cli-git-unlink) | `agentuity git unlink` | Unlink a project from its GitHub repository |
+
+### integration
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| [agentuity-cli-integration-github-connect](./agentuity-cli-integration-github-connect) | `agentuity integration github connect` | Connect your GitHub account to enable automatic deployments |
+| [agentuity-cli-integration-github-disconnect](./agentuity-cli-integration-github-disconnect) | `agentuity integration github disconnect` | Disconnect a GitHub account from your organization |
 
 ### profile
 

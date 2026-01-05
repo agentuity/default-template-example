@@ -1,7 +1,7 @@
 ---
 name: agentuity-cli-cloud-redis-show
 description: Show Redis connection URL. Requires authentication. Use for Agentuity cloud platform operations
-version: "0.0.110"
+version: "0.0.111"
 license: Apache-2.0
 allowed-tools: "Bash(agentuity:*)"
 metadata:
