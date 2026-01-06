@@ -69,9 +69,9 @@ export function App() {
 						/>
 					</svg>
 
-					<h1 className="text-5xl font-thin">Translation Agent</h1>
+					<h1 className="text-5xl font-thin">Welcome to Agentuity</h1>
 
-					<p className="text-gray-400 text-lg">Powered by Agentuity</p>
+					<p className="text-gray-400 text-lg">The <span className="italic font-serif">Full-Stack</span> Platform for AI Agents</p>
 				</div>
 
 				{/* Translate Form */}
