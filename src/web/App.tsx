@@ -337,7 +337,7 @@ export function App() {
 								text: (
 									<>
 										Edit{" "}
-										<code className="text-white">src/agent/hello/agent.ts</code>{" "}
+										<code className="text-white">src/agent/translate/agent.ts</code>{" "}
 										to change how your agent responds.
 									</>
 								),
